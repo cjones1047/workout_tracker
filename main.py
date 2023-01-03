@@ -26,6 +26,10 @@ exercise_response = exercise_response.json()
 sheety_endpoint = "https://api.sheety.co/5c0890de0bca32e2dc600cbaa0236156/myWorkouts/workouts"
 current_date = datetime.date.today().strftime('%d/%m/%Y')
 current_time = datetime.datetime.now().strftime('%H:%M:%S')
+sheety_token = os.getenv("SHEETY_TOKEN")
+sheety_headers = {
+    "Authorization": f"Bearer {sheety_token}"
+}
 
 for exercise in exercise_response["exercises"]:
     sheety_post = {
@@ -37,5 +41,5 @@ for exercise in exercise_response["exercises"]:
             "calories": f'{exercise["nf_calories"]}'
         }
     }
-    sheety_response = requests.post(url=sheety_endpoint, json=sheety_post)
+    sheety_response = requests.post(url=sheety_endpoint, headers=sheety_headers, json=sheety_post)
     sheety_response.raise_for_status()
