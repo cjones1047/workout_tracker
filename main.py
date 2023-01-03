@@ -1,6 +1,7 @@
 import os
 import dotenv
 import requests
+import datetime
 
 dotenv.load_dotenv()
 
@@ -19,4 +20,22 @@ json = {
 }
 
 exercise_response = requests.post(url=exercise_endpoint, headers=headers, json=json)
-print(exercise_response.text)
+exercise_response.raise_for_status()
+exercise_response = exercise_response.json()
+
+sheety_endpoint = "https://api.sheety.co/5c0890de0bca32e2dc600cbaa0236156/myWorkouts/workouts"
+current_date = datetime.date.today().strftime('%d/%m/%Y')
+current_time = datetime.datetime.now().strftime('%H:%M:%S')
+
+for exercise in exercise_response["exercises"]:
+    sheety_post = {
+        "workout": {
+            "date": f"{current_date}",
+            "time": f"{current_time}",
+            "exercise": f"{exercise['name'].title()}",
+            "duration": f'{exercise["duration_min"]}',
+            "calories": f'{exercise["nf_calories"]}'
+        }
+    }
+    sheety_response = requests.post(url=sheety_endpoint, json=sheety_post)
+    sheety_response.raise_for_status()
